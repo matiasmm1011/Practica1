@@ -6,6 +6,7 @@ import './App.css'
 const API_URL = 'https://dummyjson.com/products'
 const CATEGORIES = ['beauty', 'fragrances', 'furniture', 'groceries']
 const SEARCH_DEBOUNCE_MS = 300
+const FETCH_TIMEOUT_MS = 10000
 
 function App() {
   const [products, setProducts] = useState([])
@@ -20,10 +21,17 @@ function App() {
 
   useEffect(() => {
     const controller = new AbortController()
+    let timedOut = false
+    let fetchTimeoutId
 
-    const timeoutId = setTimeout(() => {
+    const debounceId = setTimeout(() => {
       setLoading(true)
       setError(null)
+
+      fetchTimeoutId = setTimeout(() => {
+        timedOut = true
+        controller.abort()
+      }, FETCH_TIMEOUT_MS)
 
       const url = search
         ? `${API_URL}/search?q=${encodeURIComponent(search)}&limit=100`
@@ -37,18 +45,27 @@ function App() {
           return res.json()
         })
         .then((data) => {
+          clearTimeout(fetchTimeoutId)
           setProducts(data.products ?? [])
           setLoading(false)
         })
         .catch((err) => {
-          if (err.name === 'AbortError') return
-          setError('No se pudieron cargar los productos. Intentá de nuevo.')
+          clearTimeout(fetchTimeoutId)
+          if (err.name === 'AbortError') {
+            if (timedOut) {
+              setError('La carga tardó demasiado. Revisá tu conexión a internet e intentá de nuevo.')
+              setLoading(false)
+            }
+            return
+          }
+          setError('No se pudieron cargar los productos. Revisá tu conexión a internet e intentá de nuevo.')
           setLoading(false)
         })
     }, SEARCH_DEBOUNCE_MS)
 
     return () => {
-      clearTimeout(timeoutId)
+      clearTimeout(debounceId)
+      clearTimeout(fetchTimeoutId)
       controller.abort()
     }
   }, [search, category])
@@ -70,9 +87,12 @@ function App() {
   }, [showCart])
 
   function addToCart(product) {
+    if (product.stock <= 0) return
+
     setCart((prev) => {
       const existing = prev.find((item) => item.id === product.id)
       if (existing) {
+        if (existing.quantity >= product.stock) return prev
         return prev.map((item) =>
           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         )
@@ -84,7 +104,9 @@ function App() {
   function changeQty(id, delta) {
     setCart((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
+        item.id === id
+          ? { ...item, quantity: Math.min(item.stock, Math.max(1, item.quantity + delta)) }
+          : item
       )
     )
   }

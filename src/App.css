@@ -108,6 +108,18 @@ select {
   background: #144b85;
 }
 
+.add-btn:disabled,
+.qty button:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+
+.stock-limit {
+  color: #b00020;
+  font-size: 12px;
+  flex-basis: 100%;
+}
+
 .cart-backdrop {
   position: fixed;
   inset: 0;

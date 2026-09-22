@@ -7,8 +7,8 @@ function ProductCard({ product, onAdd }) {
       <p className="meta">
         Rating: {product.rating.toFixed(1)} · Stock: {product.stock}
       </p>
-      <button className="add-btn" onClick={onAdd}>
-        Agregar
+      <button className="add-btn" onClick={onAdd} disabled={product.stock <= 0}>
+        {product.stock <= 0 ? 'Sin stock' : 'Agregar'}
       </button>
     </article>
   )

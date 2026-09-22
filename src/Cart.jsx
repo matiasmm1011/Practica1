@@ -26,10 +26,17 @@ const Cart = forwardRef(function Cart(
                 -
               </button>
               <span>{item.quantity}</span>
-              <button aria-label="Agregar uno" onClick={() => onQty(item.id, 1)}>
+              <button
+                aria-label="Agregar uno"
+                onClick={() => onQty(item.id, 1)}
+                disabled={item.quantity >= item.stock}
+              >
                 +
               </button>
             </div>
+            {item.quantity >= item.stock && (
+              <span className="stock-limit">Máximo disponible</span>
+            )}
             <button
               className="remove"
               aria-label={`Eliminar ${item.title}`}
