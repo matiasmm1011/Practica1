@@ -126,10 +126,7 @@ function App() {
     setShowCart(false)
   }
 
-  const total = cart.reduce((sum, item) => {
-    const discountFactor = 1 - (item.discountPercentage ?? 0) / 100
-    return sum + item.price * discountFactor * item.quantity
-  }, 0)
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0)
 
