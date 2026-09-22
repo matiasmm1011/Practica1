@@ -62,9 +62,20 @@ select {
 }
 
 .card img {
-  width: 300px;
+  width: 100%;
+  max-width: 300px;
   height: 200px;
   object-fit: contain;
+}
+
+.loading,
+.error {
+  padding: 8px 0;
+}
+
+.error {
+  color: #b00020;
+  font-weight: 600;
 }
 
 .card h3 {
@@ -85,12 +96,23 @@ select {
 }
 
 .add-btn {
-  background: #4a90d9;
-  color: #5a9ae0;
+  background: #1a5fa8;
+  color: #fff;
   border: none;
   border-radius: 6px;
   padding: 8px 14px;
   cursor: pointer;
+}
+
+.add-btn:hover {
+  background: #144b85;
+}
+
+.cart-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 40;
 }
 
 .cart {
@@ -103,8 +125,24 @@ select {
   background: #fff;
   padding: 20px;
   overflow-y: auto;
-  z-index: -1;
+  z-index: 50;
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
+}
+
+.cart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cart-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  color: #222;
+  padding: 4px 8px;
 }
 
 .cart-list {

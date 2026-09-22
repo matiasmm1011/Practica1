@@ -1,29 +1,39 @@
-function Cart({ items, total, onQty, onRemove, onCheckout }) {
+import { forwardRef } from 'react'
+
+const Cart = forwardRef(function Cart(
+  { items, total, onQty, onRemove, onCheckout, onClose },
+  ref
+) {
   return (
-    <aside className="cart">
-      <h2>Tu carrito</h2>
+    <aside className="cart" ref={ref} tabIndex={-1} aria-label="Carrito de compras">
+      <div className="cart-header">
+        <h2>Tu carrito</h2>
+        <button className="cart-close" aria-label="Cerrar carrito" onClick={onClose}>
+          ×
+        </button>
+      </div>
 
       {items.length === 0 && <p>El carrito está vacío.</p>}
 
       <ul className="cart-list">
-        {items.map((item, index) => (
+        {items.map((item) => (
           <li key={item.id} className="cart-item">
             <img src={item.thumbnail} alt={item.title} width="60" />
             <span className="cart-title">{item.title}</span>
             <span>${item.price.toFixed(2)}</span>
             <div className="qty">
-              <button aria-label="Quitar uno" onClick={() => onQty(index, -1)}>
+              <button aria-label="Quitar uno" onClick={() => onQty(item.id, -1)}>
                 -
               </button>
               <span>{item.quantity}</span>
-              <button aria-label="Agregar uno" onClick={() => onQty(index, 1)}>
+              <button aria-label="Agregar uno" onClick={() => onQty(item.id, 1)}>
                 +
               </button>
             </div>
             <button
               className="remove"
               aria-label={`Eliminar ${item.title}`}
-              onClick={() => onRemove(item)}
+              onClick={() => onRemove(item.id)}
             >
               x
             </button>
@@ -37,6 +47,6 @@ function Cart({ items, total, onQty, onRemove, onCheckout }) {
       </button>
     </aside>
   )
-}
+})
 
 export default Cart
